@@ -1,0 +1,125 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset="utf-8">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-FRKBFGL3RS"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', 'G-FRKBFGL3RS');
+    </script>
+    <script async type="text/javascript" src="cppsolver.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"
+        integrity="sha512-aVKKRRi/Q/YV+4mjoKBsE4x3H+BkegoM/em46NNlCqNTmUYADjBbeNefNxYV7giUp0VxICtqdrbqU7iVaeZNXA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <title>Connect 4</title>
+    <link rel="icon" href="img/c4.ico" type="image/x-icon" />
+    <link href="style.css" rel="stylesheet">
+    <script src="game.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body>
+
+    <div class="heading">   
+        <ul class="navbar">
+            <li class="navElement" style="float:left;"><a href="https://github.com/ethantomb/connect4" target="_blank">The
+                    Source Code</a></li>
+            <li class="navElement" style="float:right;"><a href="https://ethantomb.github.io" target="_blank">My Other
+                    Projects</a></li>
+        </ul>
+        <h1>Connect 4</h1>
+        <p id="intro">Challenge me, if you dare!</p>
+    </div>
+
+    <!-- <button id="howitworks" onclick="howitworks()">How it works</button> -->
+
+
+
+    <div class="outcome_modal" id="outcome">
+        <div class="outcome_modal_content">
+            <span class="outcome_close" id="close">&times;</span>
+            <h3>Game Over!</h3>
+            <p id="outcome_text">Text</p>
+        </div>
+    </div>
+    </div>
+    <div class="game-container">
+
+        <div class="controls">
+            <div class="slidecontainer">
+                <label for="depthSlider">Depth: 0 </label>
+                <input type="range" min="0" max="11" value="5" step="1" class="slider" id="SetDepth">
+                <label id="maxDepth" for="depthSlider"> 11 &nbsp;</label>
+                <output id="output">(5)</output>
+
+            </div>
+
+            <div class="warning">
+                <label for="warning">Unlock Depth 14? (Warning: I am not responsible for your CPU blowing up.)
+                </label> <input name="warning" enabled="false" type="checkbox" id="d11_experimental" checked="false">
+            </div>
+            <div class="radiocontainer">
+                <label for="red">Red</label>
+                <input type="radio" id="red" name="color" value="red" checked>
+                <label for="yellow">Yellow</label>
+                <input type="radio" id="yellow" name="color" value="yellow">
+            </div>
+            <p id="WinFound"></p>
+
+            <button id="startButton" onclick="start()">Start</button>
+        </div>
+        <div id="grid" class="grid-container">
+            <div class="grid-item" id="00" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="01" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="02" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="03" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="04" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="05" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="06" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="10" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="11" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="12" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="13" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="14" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="15" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="16" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="20" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="21" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="22" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="23" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="24" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="25" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="26" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="30" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="31" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="32" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="33" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="34" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="35" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="36" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="40" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="41" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="42" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="43" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="44" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="45" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="46" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="50" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="51" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="52" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="53" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="54" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="55" onclick="processClick(this.id)"></div>
+            <div class="grid-item" id="56" onclick="processClick(this.id)"></div>
+        </div>
+
+    </div>
+</body>
+
+</html>

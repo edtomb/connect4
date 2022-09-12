@@ -1,0 +1,193 @@
+
+a{
+  color:rgb(19, 19, 19);
+  text-decoration:none;
+  font-weight:bold;
+}
+li:hover>a{
+  color:#239574;
+}
+
+
+body {
+  margin: 0;
+  margin-bottom: 5px;
+  height: 100vh;
+background-color: #192B48;
+  background-image: url("./img/background.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  font-family: 'arial';
+}
+
+h1 {
+
+  font-family: 'arial';
+  text-align: center;
+  font-size: 50px;
+  color: #FFF;
+}
+
+p {
+  color: #FFF;
+  font-size: 20px;
+}
+#outcome_text{
+    color: #192B48;
+    font-size: 20px;
+}
+
+button {
+  background-color: #4CAF50;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+
+  cursor: pointer;
+}
+button:disabled{
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+button[enabled]:hover {
+  background-color: #30a534;
+}
+
+.heading {
+  background-color: #B59999;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  text-align: center;
+  background-color: rgb(58, 59, 72);
+  width: 100%;
+}
+
+.heading>ul {
+  
+  background-color:rgb(19, 19, 19);
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+label{
+  
+  color: #FFF;
+}
+li{
+  display:inline-block;
+  padding: 20px 25px;
+  
+  background-color:azure;
+}
+li:hover{
+  background-color: rgb(26, 28, 58);
+  
+}
+
+.controls {
+  background-color: #B59999;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  
+  color: #fff;
+  border-radius: 30px;
+  background-color: rgb(26, 28, 58);
+  width: 100%;
+}
+
+.slidecontainer {
+
+  vertical-align: middle;
+}
+
+.game-container {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+/* Responsive layout - makes a one column layout instead of a two-column layout */
+@media (max-width: 800px) {
+  .game-container {
+    width: 100%;
+
+    flex-direction: column;
+  }
+}
+
+.grid-container {
+
+  display: grid;
+  background-color: grey;
+  grid-template-columns: auto auto auto auto auto auto auto;
+
+
+}
+
+.radioContainer {
+  display: grid;
+}
+
+.grid-item {
+  background-color: rgb(122, 3, 92);
+  border: 5px solid rgba(59, 60, 87, 0.8);
+  text-align: center;
+  border-radius: 100%
+}
+.outcome_modal{
+  display:none;
+  /* Hidden by default */
+  position: fixed;
+  /* Stay in place */
+  z-index: 1;
+  /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%;
+  /* Full width */
+  height: 100%;
+  /* Full height */
+  overflow: auto;
+}
+/* Modal Content/Box */
+.outcome_modal_content {
+  text-align:center;
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.outcome_close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.outcome_close:hover,
+.outcome_close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+.sticky {
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+/* Add some top padding to the page content to prevent sudden quick movement (as the navigation bar gets a new position at the top of the page (position:fixed and top:0) */
+.sticky + .content {
+  padding-top: 60px;
+}
