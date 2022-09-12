@@ -1,22 +1,34 @@
-// max example
+
 #include <iostream> 
 #include <algorithm>
 #include <string.h>
 #include <vector>
 using namespace std;
+/**
+ * @brief The class for the connect 4 board. Contains the board and the methods to play the game.
+ *
+ * 
+ */
 class connect4Board
 {
 public:
+    /**
+     * @brief Construct a new connect4 Board object from string
+     * 
+     * @param s1 - First half of the string
+     * @param s2 - Second half of the string - for some reason, the JS code sent a broken string, so halving the length fixed that problem
+     * @param maxSearchPositions - Maximum number of positions that the minimax algorithm will search, regardless of the depth
+     */
     connect4Board(const string s1, const string s2,int maxSearchPositions=1500000)
     {
-        //C++ sucks!
+        
         maxPositions=maxSearchPositions;
         string startingposition=s1+s2;
         
         if (startingposition.size() != 42)
         {
-            
-            
+            cout << "Invalid starting position" << endl;
+            return;  
         }
         int nextI = 0;
         char nextC;
@@ -27,7 +39,7 @@ public:
                 nextC = startingposition.at(nextI);
                 if (!(nextC == '0' || nextC == '1' || nextC == '2'))
                 {
-                   
+                    cout << "Invalid starting position" << endl;
                     return;
                 }
                 // 0 is 48, 1 is 49. WTF?
@@ -39,7 +51,6 @@ public:
         // make the mask for the board. The mask is an array of 7 ints, each int is the highest row that is not empty
         for (int i = 0; i < 7; i++)
         {
-
             for (int j = 0; j < 6; j++)
             {
                 if (board[j][i] != 0)
@@ -51,6 +62,11 @@ public:
         }
        
     }
+    /**
+     * @brief Default board constructor 
+     * 
+     * @param maxSearchPositions - Maximum number of positions that the minimax algorithm will search, regardless of the depth
+     */
     connect4Board(int maxSearchPositions=1500000)
     {
         maxPositions=maxSearchPositions;
@@ -62,22 +78,45 @@ public:
             }
         }
     }
+    /**
+     * @brief Add a piece to the board
+     * 
+     * @param col - column to place the piece in
+     * @param playingRed 
+     * @return int - the row that the piece was placed in or -1 if attempting to add to a full collumn
+     */
     int add(int col, bool playingRed)
     {
+        // check if the column is full
         if (mask[col] == 0)
         {
             return -1;
         }
+        //decrement the mask to signify a row shift up
+        //The board is laid out such that the the bottom row is row 5, and the top row is row 0
         mask[col]--;
         int row = mask[col];
+        //If playing red is true, this expression evaluates to 1-0, otherwise it evaluates to 0-1.
         board[row][col] = playingRed - !playingRed;
+        nMovesPlayed+=1;
         return row;
     }
+    /**
+     * @brief Removes the top piece from a given collumn. This breaks if you try to call remove on an empty collumn, but that should never happen
+     * 
+     * @param col - The column to remove from
+     */
     void remove(int col)
     {
         board[mask[col]][col] = 0;
+        nMovesPlayed-=1;
         mask[col]++;
     }
+    /**
+     * @brief Returns the number of 0s left on the board. This slows my algorithm down a LOT in hindsight.... 
+     * 
+     * @return int - number of 0s left on the board
+     */
     int numMovesPlayed()
     {
         int n = 0;
@@ -90,6 +129,14 @@ public:
         }
         return 42 - n;
     }
+    /**
+     * @brief Checks if a given move wins the game for a given player
+     * 
+     * @param col - The column to play
+     * @param red - True if the player is red, false if the player is yellow
+     * @return true if the move wins the game
+     * @return false if the move does not win the game
+     */
     bool isWinningMove(int col, bool red)
     {
         if (add(col, red) == -1)
@@ -101,22 +148,29 @@ public:
         // Return game is over at position and evaluation is winnning
         return var[0] && var[1] * (red - !red) > 0;
     }
-    // Expects var to be a pointer to a 2d array of ints
-    // var[0]: 0=no winner 1=winner.
-    // var[1]: rows*cols-number of moves left * 1 if red wins, -1 if yellow wins
+    /**
+     * @brief Returns the static evaluation of a position.
+     * 
+     * @param var - A pointer to an array of 2 ints. state will set var[0] to 1 if the game is over, 
+     *              and var[1] to 0 for draw or game not over, or eavl= ((rows*cols)-numMovesPlayed)/2 if red wins, or -eval if yellow wins
+     */
     void state(int *var)
     {
-        int eval = (rows * cols - numMovesPlayed() + 1) / 2;
+        int posContains0=1;
+        int eval = (rows * cols - nMovesPlayed + 1) / 2;
         for (int i = 0; i < 6; i++)
         {
             for (int j = 0; j < 7; j++)
             {
+                
                 if (board[i][j] == 0)
                 {
+                    posContains0=0;
                     continue;
                 }
                 int color = board[i][j];
                 int count = 1;
+                // check horizontal
                 for (int k = 1; k < 4; k++)
                 {
                     if (j + k < 7 && board[i][j + k] == color)
@@ -135,6 +189,7 @@ public:
                     return;
                 }
                 count = 1;
+                // check vertical
                 for (int k = 1; k < 4; k++)
                 {
                     if (i + k < 6 && board[i + k][j] == color)
@@ -153,6 +208,7 @@ public:
                     return;
                 }
                 count = 1;
+                // check diagonal down
                 for (int k = 1; k < 4; k++)
                 {
                     if (i + k < 6 && j + k < 7 && board[i + k][j + k] == color)
@@ -171,6 +227,7 @@ public:
                     return;
                 }
                 count = 1;
+                // check diagonal up
                 for (int k = 1; k < 4; k++)
                 {
                     if (i + k < 6 && j - k >= 0 && board[i + k][j - k] == color)
@@ -190,10 +247,19 @@ public:
                 }
             }
         }
-        var[0] = 0;
+        // If we get here, the game is not over
+        var[0] = posContains0;
         var[1] = 0;
     }
-    // Finds current board eval
+    /**
+     * @brief Evaluates the board for a given player
+     * 
+     * @param maximizing - Checking for a win for the maximizing player
+     * @param depth - The depth of the search
+     * @param alpha - The alpha value for alpha-beta pruning
+     * @param beta  - The beta value for alpha-beta pruning
+     * @return int - The evaluation of the board
+     */
     int minimax(bool maximizing, int depth, int alpha = -1000, int beta = 1000)
     {
         numevaluated+=1;
@@ -213,18 +279,18 @@ public:
             {
                 if (isWinningMove(i, true))
                 {
-                    return (rows * cols - numMovesPlayed() + 1) / 2;
+                    return (rows * cols - nMovesPlayed + 1) / 2;
                 }
             }
         }
         else{
             
-            int maxscore = -(rows * cols - numMovesPlayed() - 1) / 2;
+            int maxscore = -(rows * cols - nMovesPlayed - 1) / 2;
             for (int i = 0; i < 7; i++)
             {
                 if (isWinningMove(i, false))
                 {
-                    return -(rows * cols - numMovesPlayed() + 1) / 2;
+                    return -(rows * cols - nMovesPlayed + 1) / 2;
                 }
             }
         }
@@ -239,7 +305,7 @@ public:
         {
             best = -1000;
            
-            int maxscore = (rows * cols - numMovesPlayed() - 1) / 2;
+            int maxscore = (rows * cols - nMovesPlayed - 1) / 2;
             if (beta > maxscore)
             {
                 beta = maxscore; // there is no need to keep beta above our max possible score.
@@ -269,7 +335,7 @@ public:
         else
         {
             best = 1000;
-            int maxscore = -(rows * cols - numMovesPlayed() - 1) / 2;
+            int maxscore = -(rows * cols - nMovesPlayed - 1) / 2;
             
             if (alpha < maxscore)
             {
@@ -298,8 +364,13 @@ public:
             return best;
         }
     }
-    // Finds best move
-    // bool: red - true, yellow - false
+    /**
+     * @brief Finds the best move for a given player by calling the minimax for each collumn
+     * 
+     * @param color - The color of the player
+     * @param depth - The depth of the search
+     * @return int - The collumn to play if you wanna win.
+     */
     int bestMove(bool color, int depth)
     {
         int bestEval = color ? -1000 : 1000;
@@ -325,6 +396,7 @@ public:
                 }
             }
         }
+        //Debugging console logs.
         cout<<"Evaluated "+to_string(numevaluated)+" positions"<<endl;
         numevaluated=0;
         vector<int> bestMoves;
@@ -341,7 +413,11 @@ public:
 
         return bestMoves[rand() % bestMoves.size()];
     }
-    
+    /**
+     * @brief String representation of the board.
+     * 
+     * @return string The board formatted as to make sense to the user.
+     */
     string toString()
     {
         string s = "";
@@ -358,11 +434,16 @@ public:
 
 private:
     int maxPositions;
+    int nMovesPlayed=0;
     int numevaluated=0;
     int rows = 6, cols = 7;
     int board[6][7];
     int mask[7] = {6, 6, 6, 6, 6, 6, 6};
 };
+/**
+ * @brief Function calls to be exported to webassembly.
+ * 
+ */
 extern "C"
 {
     connect4Board *gameboard;
