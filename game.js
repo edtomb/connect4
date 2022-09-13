@@ -154,15 +154,15 @@ class Board {
     async processHumanMove(id) {
         //processes the human move
         if (this.humanTurn) {
-            let col = id.substring(1);
+                let col = id.substring(1);
             
                 let index = this.add(col,this.humanPlayingRed);
                 if(index=="-1") return;
-                let clicked = [(this.humanPlayingRed -!this.humanPlayingRed), index[0], index[1]]
+                let clicked = [(this.humanPlayingRed -!this.humanPlayingRed), index[0], index[1]];
                 
-                    this.humanTurn = false;
-                    await this.animate_fall(clicked);
-                    this.draw();
+                this.humanTurn = false;
+                await this.animate_fall(clicked);
+                this.draw();
                 
                 
             
@@ -175,6 +175,8 @@ class Board {
 
             if (!this.humanTurn) {
 
+                if(document.getElementById("auto").checked){
+                
                     let move=getMoveCpp(!this.humanPlayingRed,Depth);
                     this.add(move,!this.humanPlayingRed);
                     let aiPiece = [(this.humanPlayingRed ? -1 : 1), this.mask[move], move];
@@ -182,8 +184,28 @@ class Board {
                     this.draw()
                     this.humanTurn = true;
                 }
+                }
             
             gState = this.state();
+            if (gState[0]) {
+                this.endGame(gState);
+                return;
+            }
+        }else if(document.getElementById("manual").checked){
+            let col = id.substring(1);
+            
+                let index = this.add(col,!this.humanPlayingRed);
+                if(index=="-1") return;
+                let clicked = [(!this.humanPlayingRed -this.humanPlayingRed), index[0], index[1]];
+                
+                this.humanTurn = true;
+                await this.animate_fall(clicked);
+                this.draw();
+                
+                
+            
+            let gState = this.state();
+
             if (gState[0]) {
                 this.endGame(gState);
                 return;
@@ -437,7 +459,7 @@ async function start() {
     game = new Board();
     document.getElementById("d11_experimental").enabled=true;
     //document.getElementById("startButton").disabled=true;
-    if (!game.humanPlayingRed) {
+    if (!game.humanPlayingRed && document.getElementById("auto").checked) {
         e=document.getElementById("d11_experimental");
         game.add(3,true);
         await game.animate_fall([1, 5, 3]);

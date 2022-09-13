@@ -119,15 +119,7 @@ public:
      */
     int numMovesPlayed()
     {
-        int n = 0;
-        for (int i = 0; i < 6; i++)
-        {
-            for (int j = 0; j < 7; j++)
-            {
-                n += board[i][j] == 0;
-            }
-        }
-        return 42 - n;
+        return nMovesPlayed;
     }
     /**
      * @brief Checks if a given move wins the game for a given player
@@ -373,6 +365,17 @@ public:
      */
     int bestMove(bool color, int depth)
     {
+        
+        if(numMovesPlayed()==0){
+            return 3;
+        }else if(numMovesPlayed()==1){
+            for(int i=0;i<7;i++){
+                if(mask[i]==5){
+                    return bestFirstMoveYellow[i];
+                }
+            }
+        }
+
         int bestEval = color ? -1000 : 1000;
         int bestCol = 0;
         int evals[7];
@@ -433,6 +436,8 @@ public:
     }
 
 private:
+    int bestFirstMoveYellow[7] = {3, 2, 3, 3, 2, 4, 4};
+
     int maxPositions;
     int nMovesPlayed=0;
     int numevaluated=0;
