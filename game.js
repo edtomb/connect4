@@ -5,6 +5,7 @@
 //Try negamax
 var maxPositions=1500000;
 var Depth=5;
+var bothAIPlayers=false;
 async function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -22,6 +23,7 @@ class Board {
         this.humanPlayingRed = document.querySelector('input[name="color"]:checked').value == "red";
 
         this.humanTurn = this.humanPlayingRed;
+        this.nextToPlay=true;
         this.draw();
 
     }
@@ -33,6 +35,7 @@ class Board {
         this.mask[col]--;
         let r=this.mask[col];
         this.board[r][col]=red-!red;
+        this.nextToPlay=!this.nextToPlay;
         return `${r}${col}`;
 
     }
@@ -144,13 +147,30 @@ class Board {
             let colorIn = piece[0] == 1 ? `#3d0000` : `#7a7a02`;
             for (let p = 0; p <= 100; p += 10) {
                 document.getElementById(`${i}${piece[2]}`).style.background = `radial-gradient(${colorIn},${colorOut})`;
-                await sleep(10);
+                await sleep(1);
             }
             document.getElementById(`${i}${piece[2]}`).style.background = `#ffffff`;
 
         }
     }
-
+    async aiVsAi(){
+        let gameState=this.state();
+        let redPlayer=this.humanPlayingRed&&this.humanTurn;
+        let col,row;
+        while(!gameState[0] &&bothAIPlayers){
+            col = getMoveCpp(redPlayer,Depth);
+            row = this.add(col,this.nextToPlay);
+            await this.animate_fall([!this.nextToPlay-this.nextToPlay,row[0],col]);
+            this.draw();
+            
+            gameState=this.state();
+        }
+        if(gameState[0]){
+            this.endGame(gameState);
+        }
+        
+        
+    }
     async processHumanMove(id) {
         //processes the human move
         if (this.humanTurn) {
@@ -454,9 +474,11 @@ function displaySliderValue() {
 var game;
 async function start() {
     //document.getElementById("GameOutcome").innerHTML = "";
+    if(bothAIPlayers) await aiVsAiMode();
     cpp_init(maxPositions);
     document.getElementById("WinFound").innerHTML="";
     game = new Board();
+    document.getElementById("aiVsAi").disabled=false;
     document.getElementById("d11_experimental").enabled=true;
     //document.getElementById("startButton").disabled=true;
     if (!game.humanPlayingRed && document.getElementById("auto").checked) {
@@ -466,6 +488,16 @@ async function start() {
         game.draw();
         game.humanTurn = true;
     }   
+}
+async function aiVsAiMode(){
+    if(!bothAIPlayers){
+        document.getElementById("aiVsAi").innerHTML="Click for AI vs Player";
+        bothAIPlayers=true;
+        await game.aiVsAi();
+    }else{
+        document.getElementById("aiVsAi").innerHTML="Click for AI vs AI";
+        bothAIPlayers=false;
+    }
 }
 function closeModal(){
     document.getElementById("outcome").style.display="none";

@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <string.h>
 #include <vector>
+#include<unordered_map>
 using namespace std;
 /**
  * @brief The class for the connect 4 board. Contains the board and the methods to play the game.
@@ -60,6 +61,16 @@ public:
                 }
             }
         }
+        for (int i = 0; i < 6; i++)
+        {
+            for (int j = 0; j < 7; j++)
+            {
+                for (int k = 0; k < 2; k++)
+                {
+                    zobristTable[i][j][k] = rand();
+                }
+            }
+        }
        
     }
     /**
@@ -75,6 +86,16 @@ public:
             for (int j = 0; j < 7; j++)
             {
                 board[i][j] = 0;
+            }
+        }
+        for (int i = 0; i < 6; i++)
+        {
+            for (int j = 0; j < 7; j++)
+            {
+                for (int k = 0; k < 2; k++)
+                {
+                    zobristTable[i][j][k] = rand();
+                }
             }
         }
     }
@@ -122,6 +143,11 @@ public:
         return nMovesPlayed;
     }
     /**
+    bool isInTranspositionTable(){
+        return transpositionTable.find(hash())!=transpositionTable.end();
+    }
+    **/
+    /**
      * @brief Checks if a given move wins the game for a given player
      * 
      * @param col - The column to play
@@ -134,7 +160,7 @@ public:
         if (add(col, red) == -1)
             return false;
 
-        int var[2];
+        
         state(var);
         remove(col);
         // Return game is over at position and evaluation is winnning
@@ -243,6 +269,19 @@ public:
         var[0] = posContains0;
         var[1] = 0;
     }
+    unsigned long int hash()
+    {
+        
+        unsigned long long int hash = 0;
+        for (int i = 0; i < 6; i++)
+        {
+            for (int j = 0; j < 7; j++)
+            {
+                hash ^= zobristTable[i][j][board[i][j]];
+            }
+        }
+        return hash;
+    }
     /**
      * @brief Evaluates the board for a given player
      * 
@@ -255,22 +294,24 @@ public:
     int minimax(bool maximizing, int depth, int alpha = -1000, int beta = 1000)
     {
         numevaluated+=1;
-        int var[2];
         state(var);
         if (var[0] == 1)
         {
+            //transpositionTable[hash()] = var[1];
             return var[1];
         }
+        //if(isInTranspositionTable()){
+        //    return transpositionTable[hash()];
+        //}
         int best;
         //Check if any of the next  moves would win on the spot
         if (maximizing)
         {
-            
-            
             for (int i = 0; i < 7; i++)
             {
                 if (isWinningMove(i, true))
                 {
+                    //transpositionTable[hash()] = (rows * cols - nMovesPlayed + 1) / 2;
                     return (rows * cols - nMovesPlayed + 1) / 2;
                 }
             }
@@ -282,6 +323,7 @@ public:
             {
                 if (isWinningMove(i, false))
                 {
+                    //transpositionTable[hash()] = -(rows * cols - nMovesPlayed + 1) / 2;
                     return -(rows * cols - nMovesPlayed + 1) / 2;
                 }
             }
@@ -366,9 +408,9 @@ public:
     int bestMove(bool color, int depth)
     {
         
-        if(numMovesPlayed()==0){
+        if(nMovesPlayed==0){
             return 3;
-        }else if(numMovesPlayed()==1){
+        }else if(nMovesPlayed==1){
             for(int i=0;i<7;i++){
                 if(mask[i]==5){
                     return bestFirstMoveYellow[i];
@@ -412,8 +454,7 @@ public:
             }
             
         }
-        
-
+       
         return bestMoves[rand() % bestMoves.size()];
     }
     /**
@@ -436,8 +477,11 @@ public:
     }
 
 private:
+    //std::unordered_map<long long, int> transpositionTable;
+    int zobristTable[6][7][2];
+        
     int bestFirstMoveYellow[7] = {3, 2, 3, 3, 2, 4, 4};
-
+    int var[2];
     int maxPositions;
     int nMovesPlayed=0;
     int numevaluated=0;
@@ -476,18 +520,4 @@ extern "C"
         return gameboard->toString();
     }
 }
-
-int main()
-{
-
-    string encodedPos = "101111112111111011111121111112101110222001";
-    connect4Board *boardFromString = new connect4Board(encodedPos,"");
-
-    cout << boardFromString->toString() << endl;
-    cout << boardFromString->bestMove(true, 12) << endl;
-    cout << boardFromString->bestMove(false, 12) << endl;
-    // boardFromString->add(0, true);
-    cout << boardFromString->toString() << endl;
-
-    return 0;
-};
+//No Main function >:)
