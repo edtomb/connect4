@@ -158,7 +158,7 @@ class Board {
         let redPlayer=this.humanPlayingRed&&this.humanTurn;
         let col,row;
         while(!gameState[0] &&bothAIPlayers){
-            col = getMoveCpp(redPlayer,Depth);
+            col = getMoveCpp(this.nextToPlay,Depth);
             row = this.add(col,this.nextToPlay);
             await this.animate_fall([!this.nextToPlay-this.nextToPlay,row[0],col]);
             this.draw();
