@@ -1,5 +1,5 @@
 # Connect 4
-###### [Try it Here](https://han75.github.io/connect4)
+###### [Try it Here](https://ethantomb.github.io/connect4)
 The childhood classic! This human-vs AI connect 4 game uses a variable-depth minimax algorithm and is gauranteed to make you angry when you lose to it:
 
 Q: How good is it? 
