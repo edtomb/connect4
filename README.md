@@ -8,11 +8,14 @@ A: The front-end is written in JavaScript. The solver is written in C++ and comp
 
 Q: How good is it? 
 
-A: currently the bot is not optimized to solve the game completely. The bot searches a max of 1.5 million positions. 
+A: currently the solver is not optimized to solve the game completely. The solver searches an adjustable hard limit of moves, which is set by default to 1.5 million
+Preliminary testing suggests a strong linear corelation between hard limit of moves and evaluation time, which would make sense from an algorithmic analysis standpoint. On google chrome, Windows Laptop with an intel core i7, the C++ solver evaluates approximately 730 positions per millisecond:
+N(t) = 733.71t + 13673 : N(t) := Number of Positions per t:=ms
+R^2 = 0.9986
+![Plot](https://raw.githubusercontent.com/ethantomb/connect4/main/img/TimePositionsPlot.png)
 
-Q: Only 1.5 million?! Thats really bad!
 
-A: Sorry. In the future, I hope to add more optimizations. For example, replacing the current 2d array with a bitboard representation, adding a transposition table, hard coding the first 4 moves.
+
 
 
 

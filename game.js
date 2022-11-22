@@ -414,18 +414,18 @@ cpp_remove = Module.cwrap('removeMove',["number"],["number","boolean"]);
 cpp_toString = Module.cwrap('boardToString',["string"],[null]);
 cpp_init = Module.cwrap('init',[null],["number"]);
     initGrid();
-    document.getElementById("d11_experimental").checked=false;
     
-    let experimental = document.getElementById("d11_experimental");
-    experimental.onclick = function(){
-        toggleMaxInput();   
-    };
+    
+    
     document.getElementById("close").onclick = function(){
         closeModal();
     }
     document.getElementById("SetDepth").oninput = function () {
         displaySliderValue();
     };
+    document.getElementById("SetMaxPositions").oninput = function(){
+        updateMaxPosSlider();
+    }
 }
 function initGrid(){
     //Get slot border width, splice off the "px"
@@ -446,30 +446,17 @@ function initGrid(){
     }
     grid.style.height = 6*gridWidth/7 + "px";
 }
-function toggleMaxInput(){
-    let CHK=document.getElementById("d11_experimental");
-    let SLD = document.getElementById("SetDepth");
-    if(CHK.checked){
-        SLD.step=1;
-        SLD.max=14;
-        document.getElementById("maxDepth").innerHTML="14";
-        
-    }else{
-    SLD.step=1;
-    
-    document.getElementById("maxDepth").innerHTML="11";
-    SLD.max=11;
-    }
-    SLD.value=Depth;
-        
-    displaySliderValue();
-}
+
 function displaySliderValue() {
     
     var val = document.getElementById("SetDepth").value;//gets the oninput value
     Depth=val;
     document.getElementById('output').innerHTML = `(${val})`;//displays this value to the html page
-
+}
+function updateMaxPosSlider(){
+    maxPositions = document.getElementById("SetMaxPositions").value;
+    //I didn't write this regex obviously.
+    document.getElementById("maxPosOutput").innerHTML = `(${maxPositions.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")})`;
 }
 var game;
 async function start() {
@@ -479,7 +466,6 @@ async function start() {
     document.getElementById("WinFound").innerHTML="";
     game = new Board();
     document.getElementById("aiVsAi").disabled=false;
-    document.getElementById("d11_experimental").enabled=true;
     //document.getElementById("startButton").disabled=true;
     if (!game.humanPlayingRed && document.getElementById("auto").checked) {
         e=document.getElementById("d11_experimental");

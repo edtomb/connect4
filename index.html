@@ -37,8 +37,7 @@
         <p id="intro">Challenge me, if you dare!</p>
     </div>
 
-    <!--I still have to implement this, or do I? <button id="howitworks" onclick="howitworks()">How it works</button> -->
-
+    
 
 
     <div class="outcome_modal" id="outcome">
@@ -53,16 +52,21 @@
 
         <div class="controls">
             <div class="slidecontainer">
-                <label for="depthSlider">Depth: 0 </label>
-                <input type="range" min="0" max="11" value="5" step="1" class="slider" id="SetDepth">
-                <label id="maxDepth" for="depthSlider"> 11 &nbsp;</label>
+                <label for="depthSlider">Depth:</label><br>
+                <label for="depthSlider">0</label>
+                <input type="range" min="0" max="14" value="5" step="1" class="slider" id="SetDepth">
+                <label id="maxDepth" for="depthSlider"> 14 &nbsp;</label><br>
                 <output id="output">(5)</output>
 
             </div>
 
             <div class="warning">
-                <label for="warning">Unlock Depth 14?</label>
-                 <input name="warning" enabled="false" type="checkbox" id="d11_experimental" checked="false">
+                
+                 <label for="warning">Max Positions To Search</label><br>
+                 <label for="warning">100</label>
+                 <input type="range" min="100" max="10000000" value="1500000" step="100" class="slider" id="SetMaxPositions">
+                 <label for="warning">10,00,000</label><br>
+                 <output id="maxPosOutput">(1,500,000)</output>
             </div>
             <div class="radiocontainer">
                 <label>Human Color:</label><br>
