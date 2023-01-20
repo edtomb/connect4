@@ -5,7 +5,9 @@
         "array": "cpp",
         "string_view": "cpp",
         "initializer_list": "cpp",
-        "utility": "cpp"
+        "utility": "cpp",
+        "xlocale": "cpp",
+        "unordered_map": "cpp"
     },
     "liveServer.settings.port": 5501
 }

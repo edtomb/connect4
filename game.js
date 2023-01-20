@@ -3,7 +3,7 @@
 //figure out transposition table
 //organize and comment code
 //Try negamax
-var maxPositions=1500000;
+
 var Depth=5;
 var bothAIPlayers=false;
 async function sleep(ms) {
@@ -28,7 +28,7 @@ class Board {
 
     }
     add(col,red){
-        cpp_add(col,red);
+        cpp_add(col);
         if(this.mask[col]==0){
             return `-1`;
         }
@@ -39,12 +39,7 @@ class Board {
         return `${r}${col}`;
 
     }
-    remove(col){
-        cpp_remove(col)
-        let r=this.mask[col];
-        this.mask[col]++;
-        this.board[r][col]=0;
-    }
+    
     numMovesLeft() {
         let n = 0;
         for (const row of this.board) {
@@ -52,25 +47,8 @@ class Board {
         }
         return n;
     }
-    getString(){
-        let s="";
-       for(let i=0;i<6;i++) {
-        for(let j=0;j<7;j++){
-            s+=this.board[i][j]+1;
-        }
-       }
-       return s;
-    }
-    //generate a hash code for the board
-    hash() {
-        let hash = 0;
-        for (let i = 0; i < 6; i++) {
-            for (let j = 0; j < 7; j++) {
-                hash += (this.board[i][j] + 1) * Math.pow(3, i * 7 + j);
-            }
-        }
-        return hash.toString(16);
-    }       
+    
+         
     //Returns a tuple with [true, 0] if the game ends in a draw, [true, 1] if player 1 wins, [true, -1] if player 2 wins, and [false, 0] if the game is not over.
     //The board is 6 rows by 7 columns, with 0 being an empty space, 1 being a red piece, and -1 being a yellow piece.
     state() {
@@ -381,7 +359,7 @@ class Board {
 
 function getMoveCpp(red,searchDepth){ 
     let tNow = performance.now();
-    let i=cpp_best_move(red,searchDepth);
+    let i=cpp_best_move();
     console.log(`Finished in ${performance.now()-tNow}`);
     return i;  
 }
@@ -406,13 +384,12 @@ function getDeviceType() {
 }
 
 //Make the grid container a square that fits inside the screen
-var cpp_best_move,cpp_add_move,cpp_remove,cpp_toString,cpp_init;
+var cpp_best_move,cpp_add,cpp_init;
 window.onload = function () {
-    cpp_best_move=Module.cwrap('getBestMove',["number"],["string","boolean","number"]);
-cpp_add = Module.cwrap('addMove',["number"],["number","boolean"]);
-cpp_remove = Module.cwrap('removeMove',["number"],["number","boolean"]);
-cpp_toString = Module.cwrap('boardToString',["string"],[null]);
-cpp_init = Module.cwrap('init',[null],["number"]);
+    cpp_best_move=Module.cwrap('getBestMove',["number"]);
+    cpp_add = Module.cwrap('playMove',["number"],["number"]);
+
+    cpp_init = Module.cwrap('newGame',["number"],["number"]);
     initGrid();
     
     
@@ -423,9 +400,7 @@ cpp_init = Module.cwrap('init',[null],["number"]);
     document.getElementById("SetDepth").oninput = function () {
         displaySliderValue();
     };
-    document.getElementById("SetMaxPositions").oninput = function(){
-        updateMaxPosSlider();
-    }
+    
 }
 function initGrid(){
     //Get slot border width, splice off the "px"
@@ -448,21 +423,16 @@ function initGrid(){
 }
 
 function displaySliderValue() {
-    
     var val = document.getElementById("SetDepth").value;//gets the oninput value
     Depth=val;
     document.getElementById('output').innerHTML = `(${val})`;//displays this value to the html page
 }
-function updateMaxPosSlider(){
-    maxPositions = document.getElementById("SetMaxPositions").value;
-    //I didn't write this regex obviously.
-    document.getElementById("maxPosOutput").innerHTML = `(${maxPositions.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")})`;
-}
+
 var game;
 async function start() {
     //document.getElementById("GameOutcome").innerHTML = "";
     if(bothAIPlayers) await aiVsAiMode();
-    cpp_init(maxPositions);
+    cpp_init(Depth);
     document.getElementById("WinFound").innerHTML="";
     game = new Board();
     document.getElementById("aiVsAi").disabled=false;
