@@ -107,6 +107,9 @@ li:hover{
 
   vertical-align: middle;
 }
+.slidecontainer>p{
+  font-size:medium
+}
 
 .game-container {
   width: 100%;

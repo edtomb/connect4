@@ -28,9 +28,8 @@
 
     <div class="heading">   
         <ul class="navbar">
-            <li class="navElement" style="float:left;"><a href="https://github.com/ethantomb/connect4" target="_blank">The
-                    Source Code</a></li>
-            <li class="navElement" style="float:right;"><a href="https://ethantomb.github.io" target="_blank">My Other
+            <li class="navElement"><a href="https://github.com/ethantomb/connect4" target="_blank">Learn More Here</a></li>
+            <li class="navElement" ><a href="https://ethantomb.github.io" target="_blank">My Other
                     Projects</a></li>
         </ul>
         <h1>Connect 4</h1>
@@ -52,11 +51,13 @@
 
         <div class="controls">
             <div class="slidecontainer">
+                
+                <p>Current Evaluation: <p id="botEval">N/A</p></p>
                 <label for="depthSlider">Depth:</label><br>
                 <label for="depthSlider">0</label>
-                <input type="range" min="0" max="14" value="5" step="1" class="slider" id="SetDepth">
-                <label id="maxDepth" for="depthSlider"> 14 &nbsp;</label><br>
-                <output id="output">(5)</output>
+                <input type="range" min="0" max="18" value="10" step="1" class="slider" id="SetDepth">
+                <label id="maxDepth" for="depthSlider"> 18 &nbsp;</label><br>
+                <output id="output">(10)</output>
 
             </div>
 
@@ -78,14 +79,14 @@
             </div>
             <div class="radiocontainer">
                 <label for="first">Human VS AI</label>
-                <input type="radio" id="auto" name="turn" value="first" checked>
+                <input type="radio" id="HumanVsAI" name="turn" value="first" checked>
                 <label for="second">Human VS Human</label>
-                <input type="radio" id="manual" name="turn" value="second">
+                <input type="radio" id="HumanVsHuman" name="turn" value="second">
             </div>
             <p id="WinFound"></p>
 
             <button id="startButton" onclick="start()">Start</button><br>
-            <button id="aiVsAi" onclick="aiVsAiMode()" disabled="true">Click for AI vs AI</button>
+            <button id="playNext" disabled="true">Next Move</button>
         </div>
         <div id="grid" class="grid-container">
             <div class="grid-item" id="00" onclick="processClick(this.id)"></div>

@@ -1,11 +1,7 @@
 //Connect 4 with minimax. 
-//TODO, add binary optimizations
-//figure out transposition table
-//organize and comment code
-//Try negamax
 
-var Depth=5;
-var bothAIPlayers=false;
+var Depth = 5;
+var bothAIPlayers = false;
 async function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -17,29 +13,29 @@ class Board {
             this.board[i] = new Array(7).fill(0);
         }
         //Column Mask - deontes the first empty collumn in each row. 
-        this.mask=[6,6,6,6,6,6,6]
-        document.getElementById("grid").style.backgroundColor="blue";
+        this.mask = [6, 6, 6, 6, 6, 6, 6]
+        document.getElementById("grid").style.backgroundColor = "blue";
         this.transposTable = {};
         this.humanPlayingRed = document.querySelector('input[name="color"]:checked').value == "red";
 
         this.humanTurn = this.humanPlayingRed;
-        this.nextToPlay=true;
+        this.nextToPlay = true;
         this.draw();
 
     }
-    add(col,red){
+    add(col, red) {
         cpp_add(col);
-        if(this.mask[col]==0){
+        if (this.mask[col] == 0) {
             return `-1`;
         }
         this.mask[col]--;
-        let r=this.mask[col];
-        this.board[r][col]=red-!red;
-        this.nextToPlay=!this.nextToPlay;
+        let r = this.mask[col];
+        this.board[r][col] = red - !red;
+        this.nextToPlay = !this.nextToPlay;
         return `${r}${col}`;
 
     }
-    
+
     numMovesLeft() {
         let n = 0;
         for (const row of this.board) {
@@ -47,13 +43,13 @@ class Board {
         }
         return n;
     }
-    
-         
+
+
     //Returns a tuple with [true, 0] if the game ends in a draw, [true, 1] if player 1 wins, [true, -1] if player 2 wins, and [false, 0] if the game is not over.
     //The board is 6 rows by 7 columns, with 0 being an empty space, 1 being a red piece, and -1 being a yellow piece.
     state() {
         //Check for vertical win
-        let winEval = 1000 - (42-this.numMovesLeft());
+        let winEval = 1000 - (42 - this.numMovesLeft());
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 7; j++) {
                 if (this.board[i][j] != 0 && this.board[i][j] == this.board[i + 1][j] && this.board[i][j] == this.board[i + 2][j] && this.board[i][j] == this.board[i + 3][j]) {
@@ -131,219 +127,62 @@ class Board {
 
         }
     }
-    async aiVsAi(){
-        let gameState=this.state();
-        let redPlayer=this.humanPlayingRed&&this.humanTurn;
-        let col,row;
-        while(!gameState[0] &&bothAIPlayers){
-            col = getMoveCpp(this.nextToPlay,Depth);
-            row = this.add(col,this.nextToPlay);
-            await this.animate_fall([!this.nextToPlay-this.nextToPlay,row[0],col]);
-            this.draw();
-            
-            gameState=this.state();
-        }
-        if(gameState[0]){
-            this.endGame(gameState);
-        }
-        
-        
-    }
+    
     async processHumanMove(id) {
         //processes the human move
         if (this.humanTurn) {
-                let col = id.substring(1);
-            
-                let index = this.add(col,this.humanPlayingRed);
-                if(index=="-1") return;
-                let clicked = [(this.humanPlayingRed -!this.humanPlayingRed), index[0], index[1]];
-                
-                this.humanTurn = false;
-                await this.animate_fall(clicked);
-                this.draw();
-                
-                
-            
-            let gState = this.state();
-
-            if (gState[0]) {
-                this.endGame(gState);
+            let col = id.substring(1);
+            let index = this.add(col, this.humanPlayingRed);
+            if (index == "-1") return;
+            let clicked = [this.humanPlayingRed ? 1 : -1, index[0], index[1]];
+            this.humanTurn = false;
+            await this.animate_fall(clicked);
+            this.draw();
+            if (this.state()[0]) {
+                this.endGame(this.state());
                 return;
             }
-
             if (!this.humanTurn) {
-
-                if(document.getElementById("auto").checked){
-                
-                    let move=getMoveCpp(!this.humanPlayingRed,Depth);
-                    this.add(move,!this.humanPlayingRed);
+                document.getElementById("playNext").disabled=true;
+                if (document.getElementById("HumanVsAI").checked) {
+                    let move = getMoveCpp();
+                    let evaluation = (this.humanPlayingRed ? -1 : 1) * cpp_geteval();
+                    let s = `${evaluation} ${evaluation>=0?"(Favors Red)":"(Favors Yellow)"}`;
+                    document.getElementById("botEval").innerText = s;
+                    this.add(move, !this.humanPlayingRed);
                     let aiPiece = [(this.humanPlayingRed ? -1 : 1), this.mask[move], move];
                     await this.animate_fall(aiPiece);
                     this.draw()
                     this.humanTurn = true;
                 }
-                }
-            
-            gState = this.state();
-            if (gState[0]) {
-                this.endGame(gState);
+                document.getElementById("playNext").disabled=false;
+            }
+            if (this.state()[0]) {
+                this.endGame(this.state());
                 return;
             }
-        }else if(document.getElementById("manual").checked){
+        } else if (document.getElementById("HumanVsHuman").checked) {
             let col = id.substring(1);
-            
-                let index = this.add(col,!this.humanPlayingRed);
-                if(index=="-1") return;
-                let clicked = [(!this.humanPlayingRed -this.humanPlayingRed), index[0], index[1]];
-                
-                this.humanTurn = true;
-                await this.animate_fall(clicked);
-                this.draw();
-                
-                
-            
-            let gState = this.state();
-
-            if (gState[0]) {
-                this.endGame(gState);
+            let index = this.add(col, !this.humanPlayingRed);
+            if (index == "-1") return;
+            let clicked = [this.humanPlayingRed?-1:1, index[0], index[1]];
+            this.humanTurn = true;
+            await this.animate_fall(clicked);
+            this.draw();
+           
+            if (this.state()[0]) {
+                this.endGame(this.state());
                 return;
             }
         }
     }
 
-    /**
-     * Minimax algorithm, negamax would work but this does too so what ever.
-     * @param {int} depth - Maximum search tree depth 
-     * @param {boolean} maximizing - Playing for a win for yellow or for red?
-     * @param {int} alpha 
-     * @param {int} beta 
-     * @returns board evaluation
-     */
-    minimax(depth, maximizing, alpha = -1000, beta = 1000) {
-        /**
-         * D12 Without transpos table - 12.8s, 10s, 34.5s, 2s, 2s, <1s
-         */
-        /**
-         * D12 With transpos table - 37.5s, 5.9s, 11.6s, lost. I did the table wrong. 
-         */
-        let gameState = this.state();
-        //TODO: Transpose table
-        if (gameState[0]) {
-            //console.table(this.board);
-            return gameState[1];
-        }
-        if (depth <= 0) {
-            //console.table(this.board);
-            return 0;
-        }
-        if (maximizing) {
-
-            let bestEval = -1000;
-            let thisPos = bestEval;
-
-            for (let j = 0; j < 7; j++) {
-                let index=this.add(j,true);
-                    if (index!="-1") {
-
-                        
-                        thisPos = this.minimax(depth - 1, false, alpha, beta);
-                        //this.transposTable[this.hash()]=thisPos;
-                        this.remove(j);
-                        bestEval = Math.max(thisPos, bestEval);
 
 
-                        if (bestEval >= beta) {
-                            return bestEval;
-                        }
-                        alpha = Math.max(bestEval, alpha);
-                        
-                    }
-                
-            }
-            return bestEval;
-        }
-        else {
-            let bestEval = 1000-this.numMovesLeft()-1;
-            let thisPos = 1000-this.numMovesLeft()-1;
-
-            for (let j = 0; j < 7; j++) {
-                let index=this.add(j,false);
-                    if (index!="-1") {
-
-                        
-                        thisPos = this.minimax(depth - 1, true, alpha, beta);
-                        //this.transposTable[this.hash()]=thisPos;
-                        this.remove(j);
-                        bestEval = Math.min(thisPos, bestEval);
-
-
-                        if (bestEval <= alpha) {
-                            return bestEval;
-                        }
-                        beta = Math.min(beta, bestEval);
-                        
-                    }
-                
-            }
-            return bestEval;
-        }
-    }
-    /**
-     * Returns the best move for the computer to play
-     * @param {boolean} playingRed - if the computer is playing the red pieces
-     * @returns 
-     */
-    getComputerMove(Depth,playingRed) {
-        let bestMove = [-1, -1];
-        let bestEval = (playingRed ? -10000 : 10000);
-        
-        let tStart = performance.now();
-        let moves = {}
-        for (let j = 0; j < 7; j++) {
-            let index=this.add(j,playingRed);
-                if (index!="-1") {
-                    
-                    
-                    let thisEval = this.minimax(Depth, !playingRed);
-                    moves[index]=thisEval;
-                    this.remove(j);
-                    if (playingRed) {
-                        if (thisEval > bestEval) {
-                            
-                            bestEval = thisEval;
-                        }
-                    } else {
-                        if (thisEval < bestEval) {
-                            
-                            bestEval = thisEval;
-                        }
-                    }
-                    
-                }
-            
-        }
-        if(bestEval!=0){
-            let movesUntilWin = this.numMovesLeft()-(Math.abs(bestEval)-(1000-42));
-            document.getElementById("WinFound").innerHTML = `${bestEval<0?"Yellow":"Red"} has a win in ${movesUntilWin/2<<0} moves.`;
-        }
-        let bestMoves = Object.keys(moves).reduce(function(bestMoves,pos){
-            if(moves[pos]==bestEval){
-                bestMoves[pos]=moves[pos];
-            }
-            return bestMoves;
-        },{});
-        var positions = Object.keys(bestMoves);
-        let posChosen = positions[positions.length*Math.random()<<0];
-        bestMove = [posChosen[0],posChosen[1]];
-        let t = performance.now() - tStart;
-        console.log(`Evaluated position in ${t} ms`);
-        return bestMove;
-
-    }
-    endGame(gState){
-        let humanWon = (this.humanPlayingRed-!this.humanPlayingRed)*gState[1]>0?"Niceeee":"Better luck next time...";
-        this.humanTurn=false;
-        document.getElementById("grid").style.backgroundColor="grey";
+    endGame(gState) {
+        let humanWon = (this.humanPlayingRed - !this.humanPlayingRed) * gState[1] > 0 ? "Niceeee" : "Better luck next time...";
+        this.humanTurn = false;
+        document.getElementById("grid").style.backgroundColor = "grey";
         let out = document.getElementById("outcome_text");
         if (gState[1] > 0) {
             out.innerHTML = "Red Wins!";
@@ -352,18 +191,19 @@ class Board {
         } else {
             out.innerHTML = "Draw?!";
         }
-        out.innerHTML+=`\n${humanWon}`;
-        document.getElementById("outcome").style.display="block";
+        out.innerHTML += `\n${humanWon}`;
+        document.getElementById("outcome").style.display = "block";
+        document.getElementById("botEval").innerText = "N/A";
     }
 }
 
-function getMoveCpp(red,searchDepth){ 
+function getMoveCpp() {
     let tNow = performance.now();
-    let i=cpp_best_move();
-    console.log(`Finished in ${performance.now()-tNow}`);
-    return i;  
+    let i = cpp_best_move();
+    console.log(`Finished in ${performance.now() - tNow}`);
+    return i;
 }
-//Red is the maximizing team. Red win evaluates to 1000
+
 var humanTurn = true;
 var teamRed = true;
 
@@ -384,78 +224,70 @@ function getDeviceType() {
 }
 
 //Make the grid container a square that fits inside the screen
-var cpp_best_move,cpp_add,cpp_init;
+var cpp_best_move, cpp_add, cpp_init, cpp_set_depth, cpp_geteval;
 window.onload = function () {
-    cpp_best_move=Module.cwrap('getBestMove',["number"]);
-    cpp_add = Module.cwrap('playMove',["number"],["number"]);
+    cpp_best_move = Module.cwrap('getBestMove', ["number"]);
+    cpp_add = Module.cwrap('playMove', ["number"], ["number"]);
 
-    cpp_init = Module.cwrap('newGame',["number"],["number"]);
+    cpp_init = Module.cwrap('newGame', ["number"], ["number"]);
+    cpp_set_depth = Module.cwrap('setDepth', ["number"], ["number"]);
+    cpp_geteval = Module.cwrap('getBotScore', ["number"]);
     initGrid();
-    
-    
-    
-    document.getElementById("close").onclick = function(){
+    document.getElementById("close").onclick = function () {
         closeModal();
     }
     document.getElementById("SetDepth").oninput = function () {
         displaySliderValue();
     };
-    
+    document.getElementById("playNext").addEventListener("click",playNextMove);
+
 }
-function initGrid(){
+function initGrid() {
     //Get slot border width, splice off the "px"
-    let borderWidth = $(".grid-item").css("border-left-width").slice(0,-2);
-    
+    let borderWidth = $(".grid-item").css("border-left-width").slice(0, -2);
+
     let grid = document.getElementById("grid");
-    
-    
-    let gridWidth = Math.min(window.innerWidth,window.innerHeight);
-    grid.style.width =  gridWidth + "px";
-    
-    
-    let slotDia = ((gridWidth/7)-2*borderWidth)<<0;
+
+
+    let gridWidth = Math.min(window.innerWidth, window.innerHeight);
+    grid.style.width = gridWidth + "px";
+
+
+    let slotDia = ((gridWidth / 7) - 2 * borderWidth) << 0;
     let gridItems = document.getElementsByClassName("grid-item");
     for (let i = 0; i < gridItems.length; i++) {
-        gridItems[i].style.height = slotDia+ "px";
+        gridItems[i].style.height = slotDia + "px";
         gridItems[i].style.width = slotDia + "px";
     }
-    grid.style.height = 6*gridWidth/7 + "px";
+    grid.style.height = 6 * gridWidth / 7 + "px";
 }
 
 function displaySliderValue() {
     var val = document.getElementById("SetDepth").value;//gets the oninput value
-    Depth=val;
+    Depth = val;
+    cpp_set_depth(Depth);
     document.getElementById('output').innerHTML = `(${val})`;//displays this value to the html page
 }
-
 var game;
 async function start() {
     //document.getElementById("GameOutcome").innerHTML = "";
-    if(bothAIPlayers) await aiVsAiMode();
     cpp_init(Depth);
-    document.getElementById("WinFound").innerHTML="";
+    document.getElementById("WinFound").innerHTML = "";
     game = new Board();
-    document.getElementById("aiVsAi").disabled=false;
-    //document.getElementById("startButton").disabled=true;
-    if (!game.humanPlayingRed && document.getElementById("auto").checked) {
-        e=document.getElementById("d11_experimental");
-        game.add(3,true);
+    if (!game.humanPlayingRed && document.getElementById("HumanVsAI").checked) {
+        e = document.getElementById("d11_experimental");
+        game.add(3, true);
         await game.animate_fall([1, 5, 3]);
         game.draw();
         game.humanTurn = true;
-    }   
-}
-async function aiVsAiMode(){
-    if(!bothAIPlayers){
-        document.getElementById("aiVsAi").innerHTML="Click for AI vs Player";
-        bothAIPlayers=true;
-        await game.aiVsAi();
-    }else{
-        document.getElementById("aiVsAi").innerHTML="Click for AI vs AI";
-        bothAIPlayers=false;
     }
 }
-function closeModal(){
-    document.getElementById("outcome").style.display="none";
-    document.getElementById("startButton").disabled=false;
+function playNextMove(){
+    let c = cpp_best_move();
+
+    game.processHumanMove(`${game.mask[c]}${c}`);
+}
+function closeModal() {
+    document.getElementById("outcome").style.display = "none";
+    document.getElementById("startButton").disabled = false;
 }
