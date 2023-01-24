@@ -173,7 +173,7 @@ public:
     int moves = 0;
 };
 int DEPTH_MAX=5;
-map<uint64_t, int> table;
+
 
 int bot_score;
 /**
@@ -186,7 +186,7 @@ int bot_score;
  */
 int negamax(Board &b, int alpha, int beta, int depth)
 {
-
+    
     // If board is full, then it is a draw
     if (b.moves == 42)
     {
@@ -208,7 +208,7 @@ int negamax(Board &b, int alpha, int beta, int depth)
         }
     }
     
-    int max = (42-b.moves)/2;
+    int max = (41-b.moves)/2;
     if(beta>max){
         beta=max;
         if(alpha>=beta){
@@ -216,7 +216,7 @@ int negamax(Board &b, int alpha, int beta, int depth)
         }
     }
     
-    // If max search depth reached, return 0.
+   // If max search depth reached, return 0.
     if (depth > DEPTH_MAX)
     {
         return 0;
@@ -254,7 +254,7 @@ int negamax(Board &b, int alpha, int beta, int depth)
             Board b2(b);
             b2.play(i);
             int opponentScore = -negamax(b2, -beta, -alpha, depth + 1);
-            if (opponentScore >= beta)
+            if (opponentScore > beta)
             {
                 return opponentScore;
             }
@@ -279,9 +279,8 @@ int bestMove(Board &b, int alpha, int beta)
     int bestScore = INT_MIN;
     // play each possible collumn
     //Because the search time converges really quickly, we can probably afford to increase maxdepth as the search continues
-    int odm = DEPTH_MAX;
-    DEPTH_MAX = DEPTH_MAX + b.moves;
     
+        
     int i;
     for (int x = 0; x < 7; x++)
     {
@@ -306,7 +305,6 @@ int bestMove(Board &b, int alpha, int beta)
             }
         }
     }
-    DEPTH_MAX=odm;
     bot_score=bestScore;
     return bestMove;
 }
@@ -333,7 +331,6 @@ extern "C"
     {
         setDepth(depth);
         b.reset();
-        table.clear();
         return 0;
     }
     /**

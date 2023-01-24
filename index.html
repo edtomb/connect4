@@ -55,20 +55,10 @@
                 <p>Current Evaluation: <p id="botEval">N/A</p></p>
                 <label for="depthSlider">Depth:</label><br>
                 <label for="depthSlider">0</label>
-                <input type="range" min="0" max="18" value="10" step="1" class="slider" id="SetDepth">
-                <label id="maxDepth" for="depthSlider"> 18 &nbsp;</label><br>
+                <input type="range" min="0" max="30" value="10" step="1" class="slider" id="SetDepth">
+                <label id="maxDepth" for="depthSlider"> 30 &nbsp;</label><br>
                 <output id="output">(10)</output>
 
-            </div>
-
-            <div class="warning">
-                <!--
-                 <label for="warning">Max Positions To Search</label><br>
-                 <label for="warning">100</label>
-                 <input type="range" min="100" max="10000000" value="1500000" step="100" class="slider" id="SetMaxPositions">
-                 <label for="warning">10,00,000</label><br>
-                 <output id="maxPosOutput">(1,500,000)</output>
-                 -->
             </div>
             <div class="radiocontainer">
                 <label>Human Color:</label><br>
@@ -83,12 +73,14 @@
                 <label for="second">Human VS Human</label>
                 <input type="radio" id="HumanVsHuman" name="turn" value="second">
             </div>
-            <p id="WinFound"></p>
 
             <button id="startButton" onclick="start()">Start</button><br>
             <button id="playNext" disabled="true">Next Move</button>
         </div>
         <div id="grid" class="grid-container">
+            <!--WARNING: THE BELOW GRID INTERACTION METHOD MAY NOT BE SUITABLE
+                FOR SOME AUDIENCES: 
+            -->
             <div class="grid-item" id="00" onclick="processClick(this.id)"></div>
             <div class="grid-item" id="01" onclick="processClick(this.id)"></div>
             <div class="grid-item" id="02" onclick="processClick(this.id)"></div>

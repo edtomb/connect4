@@ -14,7 +14,6 @@ body {
   margin-bottom: 5px;
   height: 100vh;
 background-color: #192B48;
-  background-image: url("./img/background.jpg");
   background-repeat: no-repeat;
   background-size: cover;
 
@@ -121,7 +120,7 @@ li:hover{
 @media (max-width: 800px) {
   .game-container {
     width: 100%;
-
+    align-items:center;
     flex-direction: column;
   }
 }
