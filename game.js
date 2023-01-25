@@ -63,7 +63,7 @@ class Board {
      */
     numMovesLeft() {
         let n = 0;
-        board.foreach((row)=>n += row.filter(e => e == 0).length);
+        this.board.forEach((row)=>n += row.filter(e => e == 0).length);
         return n;
     }
 
