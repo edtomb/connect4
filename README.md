@@ -1,6 +1,6 @@
 # Connect 4 Solver
 
-I recently wrote a Connect 4 solver using C++. The frontend of the project is written in vanilla JavaScript, while the solver is written in C++ and compiled to webassembly through emscripten. The solver can be found on my GitHub page [here](https://ethantomb.github.io/connect4)
+I recently wrote a Connect 4 solver using C++. The frontend of the project is written in vanilla JavaScript, while the solver is written in C++ and compiled to webassembly through emscripten. The solver can be found on my GitHub page [here](https://edtomb.github.io/connect4)
 
 ## Initial Implementation
 
